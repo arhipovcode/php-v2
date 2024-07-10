@@ -1,14 +1,21 @@
 <?php
 require '../services/autoloader/Autoloader.php';
 
-use models\catalog\Catalogs;
-use models\product\Product;
 use services\autoloader\Autoloader;
 
 spl_autoload_register([new Autoloader(), 'loadClass']);
 
-$catalog = new Catalogs();
-//$product = new Product();
-$catalog = $catalog->getById(13);
+//$catalog = Catalogs::getById(1);
+if (!$request_uri = preg_replace(['#^/#','#[?].*#','#/$#'], "", $_SERVER['REQUEST_URI'])) {
+    $request_uri = 'catalog';
+}
 
-//echo "<script src='test.js'></script>";
+$parts = explode("/", $request_uri);
+$controllerName = $parts[0];
+$action = $parts[1] ?? null;
+$controllerClass = 'controllers\\' . ucfirst($controllerName) . 'Controller';
+
+if (class_exists($controllerClass)) {
+    $controller = new $controllerClass();
+    $controller->run($action);
+}

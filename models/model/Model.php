@@ -19,25 +19,27 @@ abstract class Model implements ModelInterface
         $this->exclude = array_merge($this->exclude, $this->setSkippedKeys());
     }
 
-    public function getById(int $id)
+    public static function getById(int $id)
     {
-        $sql = "SELECT * FROM {$this->tableName} WHERE id = :id";
-        return $this->db->queryOne($sql, $id, get_called_class());
+        $tableName = static::getTableName();
+        $sql = "SELECT * FROM {$tableName} WHERE id = :id";
+        return DB::getInstance()->queryOne($sql, $id, get_called_class());
     }
 
-    public function getAll(): false|array
+    public static function getAll(): false|array
     {
-        $sql = "SELECT * FROM {$this->tableName}";
-        return $this->db->queryAll($sql);
+        $tableName = static::getTableName();
+        $sql = "SELECT * FROM {$tableName}";
+        return Db::getInstance()->queryAll($sql);
     }
 
-    public function insert(): int
+    protected function insert(): int
     {
         $sql = $this->createInsertQuery();
         return $this->db->execute($sql, $this->bindParams);
     }
 
-    public function update(): int
+    protected function update(): int
     {
         $sql = $this->createUpdateQuery();
         return $this->db->execute($sql, array_merge($this->bindParams, ['id' => $this->id]));
@@ -47,6 +49,18 @@ abstract class Model implements ModelInterface
     {
         $sql = "DELETE FROM {$this->tableName} WHERE id = :id";
         return $this->db->delete($sql, $this->id);
+    }
+
+    public function save()
+    {
+        $sql = "SELECT * FROM {$this->tableName} WHERE id = :id";
+        $request = $this->db->queryOne($sql, $this->getId());
+
+        if (!empty($request)) {
+            return $this->update();
+        }
+
+        return $this->insert();
     }
 
     public function createInsertQuery():string
@@ -86,6 +100,6 @@ abstract class Model implements ModelInterface
         return "UPDATE {$this->tableName} SET $keys WHERE id = :id";
     }
 
-    abstract public function getTableName(): string;
+    abstract public static function getTableName(): string;
     abstract public function setSkippedKeys(): array;
 }

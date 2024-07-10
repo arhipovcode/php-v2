@@ -14,7 +14,7 @@ class Catalogs extends Model
     public string $currency;
     public string $img_name;
 
-    public function getTableName(): string
+    public static function getTableName(): string
     {
         return "catalogs";
     }

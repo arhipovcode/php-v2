@@ -4,7 +4,7 @@ namespace interfaces;
 
 interface ModelInterface
 {
-    public function getById(int $id);
-    public function getAll();
-    public function getTableName(): string;
+    public static function getById(int $id);
+    public static function getAll();
+    public static function getTableName(): string;
 }

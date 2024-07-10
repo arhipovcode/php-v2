@@ -1,0 +1,19 @@
+.header-nav {
+    &__list {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 24px;
+        margin: 0;
+        padding-left: 0;
+
+        &-item {
+            list-style-type: none;
+        }
+    }
+
+    &__link {
+        font: 700 20px/24px Arial;
+        text-transform: lowercase;
+    }
+}
